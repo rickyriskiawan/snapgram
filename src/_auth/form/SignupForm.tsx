@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -18,8 +18,12 @@ import Loader from '@/components/shared/Loader';
 import { SignupValidation } from '@/lib/validation';
 import { toast } from 'sonner';
 import { useCreateUserAccount, useSignInAccount } from '@/lib/react-query/queriesAndMutations';
+import { useUserContext } from '@/context/AuthContext';
 
 const SignupForm = () => {
+  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const navigate = useNavigate();
+
   const { mutateAsync: createUserAccount, isLoading: isCreatingUser } = useCreateUserAccount();
 
   const { mutateAsync: signInAccount, isLoading: isSigninIn } = useSignInAccount();
@@ -50,6 +54,15 @@ const SignupForm = () => {
 
     if (!session) {
       return toast.warning('Sign in failed, Please try again.');
+    }
+
+    const isLoggedIn = await checkAuthUser();
+
+    if (isLoggedIn) {
+      form.reset();
+      navigate('/');
+    } else {
+      toast.warning('Sign up failed. Please try again');
     }
   }
   return (
