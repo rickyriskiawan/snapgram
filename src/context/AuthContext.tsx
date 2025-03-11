@@ -3,7 +3,7 @@ import { IUser } from '@/types';
 import { getCurrentUser } from '@/lib/appwrite/api';
 import { useNavigate } from 'react-router-dom';
 
-export const INITIAL_USER = {
+const INITIAL_USER = {
   id: '',
   name: '',
   username: '',
@@ -33,13 +33,13 @@ type IContextType = {
 const AuthContext = createContext<IContextType>(INITIAL_STATE);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState<IUser>(INITIAL_USER);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const navigate = useNavigate();
-
   const checkAuthUser = async () => {
+    setIsLoading(true);
     try {
       const currentAccount = await getCurrentUser();
 
@@ -68,12 +68,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem('cookieFallback') === '[]') {
+    if (
+      localStorage.getItem('cookieFallback') === '[]'
+
+      //  || localStorage.getItem('cookieFallback') === null ||
+      // localStorage.getItem('cookieFallback') === undefined
+    ) {
       navigate('/sign-in');
     }
 
     checkAuthUser();
-  });
+  }, []);
 
   const value = {
     user,

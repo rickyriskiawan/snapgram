@@ -19,7 +19,7 @@ export async function createUserAccount(user: INewUser) {
       username: user.username,
     });
 
-    return newUser;
+    return newAccount;
   } catch (error) {
     console.log(error);
     return error;
