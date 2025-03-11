@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { IUser } from '@/types';
-import { getCurrentUser } from '@/lib/appwrite/api';
+import { getCurrentUser, signOutAccount } from '@/lib/appwrite/api';
 import { useNavigate } from 'react-router-dom';
 
 const INITIAL_USER = {
@@ -69,11 +69,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     if (
-      localStorage.getItem('cookieFallback') === '[]'
-
-      //  || localStorage.getItem('cookieFallback') === null ||
-      // localStorage.getItem('cookieFallback') === undefined
+      localStorage.getItem('cookieFallback') === '[]' ||
+      localStorage.getItem('cookieFallback') === null ||
+      localStorage.getItem('cookieFallback') === undefined
     ) {
+      signOutAccount();
       navigate('/sign-in');
     }
 
